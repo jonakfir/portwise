@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
+  <g transform="translate(0, 0)">
+    <!-- Compass icon -->
+    <circle cx="24" cy="24" r="18" stroke="#FF5C1A" stroke-width="2" fill="none"/>
+    <circle cx="24" cy="24" r="7" stroke="#FF5C1A" stroke-width="1.5" fill="none"/>
+    <line x1="24" y1="2" x2="24" y2="12" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="36" x2="24" y2="46" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="2" y1="24" x2="12" y2="24" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="36" y1="24" x2="46" y2="24" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <polygon points="24,2 21,10 24,7 27,10" fill="#FF5C1A"/>
+    <path d="M20,26 L24,18 L28,26 Q24,30 20,26Z" fill="#FF5C1A" opacity="0.9"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="56" y="33" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="28" fill="#FFFFFF" letter-spacing="-0.5">Portwise</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="12" fill="#030B1A"/>
+  <g transform="translate(8, 6)">
+    <!-- Compass rose / ship wheel hybrid -->
+    <circle cx="24" cy="26" r="18" stroke="#FF5C1A" stroke-width="2" fill="none"/>
+    <circle cx="24" cy="26" r="8" stroke="#FF5C1A" stroke-width="1.5" fill="none"/>
+    <!-- Cardinal points -->
+    <line x1="24" y1="4" x2="24" y2="14" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="38" x2="24" y2="48" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="2" y1="26" x2="12" y2="26" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="36" y1="26" x2="46" y2="26" stroke="#FF5C1A" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Diagonal spokes -->
+    <line x1="10.3" y1="12.3" x2="17" y2="19" stroke="#FF5C1A" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="31" y1="33" x2="37.7" y2="39.7" stroke="#FF5C1A" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="37.7" y1="12.3" x2="31" y2="19" stroke="#FF5C1A" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="17" y1="33" x2="10.3" y2="39.7" stroke="#FF5C1A" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- North arrow -->
+    <polygon points="24,4 21,12 24,9 27,12" fill="#FF5C1A"/>
+    <!-- Ship bow in center -->
+    <path d="M20,28 L24,20 L28,28 Q24,32 20,28Z" fill="#FF5C1A" opacity="0.9"/>
+  </g>
+</svg>

@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --navy: #030B1A;
+  --orange: #FF5C1A;
+  --ice: #A8D8EA;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--navy);
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A1628;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A3459;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #284E7D;
+}
+
+/* Monospace styling for HTS codes */
+.hts-code {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Glow effects */
+.glow-orange {
+  box-shadow: 0 0 20px rgba(255, 92, 26, 0.3), 0 0 60px rgba(255, 92, 26, 0.1);
+}
+
+.glow-ice {
+  box-shadow: 0 0 20px rgba(168, 216, 234, 0.2), 0 0 60px rgba(168, 216, 234, 0.05);
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(10, 22, 40, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(168, 216, 234, 0.1);
+}
+
+.glass-hover:hover {
+  background: rgba(10, 22, 40, 0.85);
+  border-color: rgba(168, 216, 234, 0.2);
+}
+
+/* Grid background */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(168, 216, 234, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 216, 234, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Shimmer loading */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(168, 216, 234, 0.05) 25%,
+    rgba(168, 216, 234, 0.1) 50%,
+    rgba(168, 216, 234, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Terminal-style text */
+.terminal-text {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--ice);
+}
+
+/* Data highlight */
+.data-highlight {
+  color: var(--ice);
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+}
+
+/* Animated underline */
+.animated-underline {
+  position: relative;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--orange);
+  transition: width 0.3s ease;
+}
+
+.animated-underline:hover::after {
+  width: 100%;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
@@ -66,12 +65,7 @@ export default function Pricing() {
     <section id="pricing" className="py-24 bg-grid relative">
       <div className="absolute inset-0 bg-gradient-to-b from-navy via-transparent to-navy" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16 animate-fade-in">
           <p className="text-orange-500 font-mono text-sm font-semibold uppercase tracking-widest mb-3">
             Pricing
           </p>
@@ -81,17 +75,11 @@ export default function Pricing() {
           <p className="text-slate-400 max-w-lg mx-auto">
             Start free. Upgrade when your trade operations need more.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6 items-start">
           {plans.map((plan, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-            >
+            <div key={i} className="animate-slide-up" style={{ animationDelay: `${i * 0.15}s` }}>
               <Card
                 className={plan.highlighted
                   ? 'border-orange-500/50 bg-gradient-to-b from-orange-500/5 to-transparent relative'
@@ -134,7 +122,7 @@ export default function Pricing() {
                   </Button>
                 </Link>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

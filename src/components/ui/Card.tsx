@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 interface CardProps {
   children: React.ReactNode;
@@ -18,19 +17,15 @@ export default function Card({ children, className, hover = false, glow = 'none'
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
+    <div
       className={cn(
-        'glass rounded-sm p-6 transition-all duration-300',
+        'glass rounded-sm p-6 transition-all duration-300 animate-slide-up',
         hover && 'glass-hover cursor-pointer',
         glowStyles[glow],
         className
       )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Card from '@/components/ui/Card';
 
 const features = [
@@ -44,12 +43,7 @@ export default function Features() {
     <section id="features" className="py-24 bg-grid relative">
       <div className="absolute inset-0 bg-gradient-to-b from-navy via-transparent to-navy" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
+        <div className="text-center mb-16 animate-fade-in">
           <p className="text-orange-500 font-mono text-sm font-semibold uppercase tracking-widest mb-3">
             Trade Intelligence Platform
           </p>
@@ -60,7 +54,7 @@ export default function Features() {
             Stop guessing at duty rates. Get the data, analysis, and alerts you need to make sourcing
             decisions with confidence.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, i) => (

@@ -50,12 +50,7 @@ export default function LiveDemo() {
   return (
     <section id="demo" className="py-24 relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 animate-fade-in">
           <p className="text-orange-500 font-mono text-sm font-semibold uppercase tracking-widest mb-3">
             Try it now
           </p>
@@ -65,7 +60,7 @@ export default function LiveDemo() {
           <p className="text-slate-400">
             Search by product description or HTS code. {3 - queriesUsed} free lookups remaining.
           </p>
-        </motion.div>
+        </div>
 
         {/* Search input */}
         <div className="relative mb-8">

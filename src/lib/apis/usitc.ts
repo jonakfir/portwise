@@ -53,13 +53,17 @@ export async function getTariffData(htsCode: string): Promise<TariffData> {
 }
 
 export async function getTariffHistory(htsCode: string): Promise<TariffHistory[]> {
-  // USITC doesn't provide historical data via API — generate realistic mock data
+  // USITC doesn't provide historical data via API — generate deterministic mock data
+  // Use a hash of the HTS code to create consistent but varied rates
+  const seed = hashCode(htsCode);
+  const baseRate = 5 + (Math.abs(seed) % 2000) / 100; // 5-25% range, deterministic
   const months = [];
-  const baseRate = 5 + Math.random() * 20;
+
   for (let i = 23; i >= 0; i--) {
     const date = new Date();
     date.setMonth(date.getMonth() - i);
-    const variation = (Math.random() - 0.5) * 3;
+    // Deterministic variation based on seed + month index
+    const variation = ((seed * (i + 1) * 31) % 300 - 150) / 100;
     const rate = Math.max(0, baseRate + variation);
     months.push({
       date: date.toISOString().slice(0, 7),
@@ -71,38 +75,85 @@ export async function getTariffHistory(htsCode: string): Promise<TariffHistory[]
   return months;
 }
 
+// Simple deterministic hash from string
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0; // Convert to 32-bit integer
+  }
+  return hash;
+}
+
+// Deterministic mock data keyed by HTS code
+const MOCK_TARIFF_MAP: Record<string, { rate: string; desc: string; s301: boolean; s232: boolean }> = {
+  '8471.30.01': { rate: 'Free', desc: 'Portable automatic data processing machines, weighing not more than 10 kg', s301: true, s232: false },
+  '6110.20.20': { rate: '16.5%', desc: 'Sweaters, pullovers, vests of cotton, knitted', s301: false, s232: false },
+  '8517.12.00': { rate: 'Free', desc: 'Telephones for cellular networks or other wireless networks', s301: true, s232: false },
+  '9403.20.00': { rate: 'Free', desc: 'Other metal furniture', s301: false, s232: true },
+  '6204.62.40': { rate: '16.6%', desc: "Women's or girls' trousers of cotton", s301: false, s232: false },
+  '8528.72.64': { rate: '3.9%', desc: 'Television receivers, color, with flat panel screen', s301: true, s232: false },
+  '9503.00.00': { rate: 'Free', desc: 'Tricycles, scooters, pedal cars and similar wheeled toys', s301: false, s232: false },
+  '4202.22.40': { rate: '17.6%', desc: 'Handbags with outer surface of textile materials', s301: false, s232: false },
+  '0901.21.00': { rate: 'Free', desc: 'Coffee, roasted, not decaffeinated', s301: false, s232: false },
+  '8703.23.00': { rate: '2.5%', desc: 'Motor vehicles for transport of persons, 1500-3000cc', s301: false, s232: false },
+  '7208.51.00': { rate: 'Free', desc: 'Flat-rolled products of iron or nonalloy steel, hot-rolled', s301: false, s232: true },
+  '7210.49.00': { rate: 'Free', desc: 'Flat-rolled products of iron or nonalloy steel, zinc-coated', s301: false, s232: true },
+  '8541.40.20': { rate: 'Free', desc: 'Light-emitting diodes (LEDs)', s301: true, s232: false },
+  '5209.42.00': { rate: '8.4%', desc: 'Woven fabrics of cotton, denim, weighing more than 200 g/m2', s301: false, s232: false },
+  '8443.32.10': { rate: 'Free', desc: 'Printers, copying machines and facsimile machines', s301: true, s232: false },
+};
+
 function getMockSearchResults(query: string): HTSSearchResult[] {
-  const mockData: HTSSearchResult[] = [
-    { htsCode: '8471.30.01', description: 'Portable automatic data processing machines, weighing not more than 10 kg', generalRate: 'Free' },
-    { htsCode: '6110.20.20', description: 'Sweaters, pullovers, vests of cotton, knitted', generalRate: '16.5%' },
-    { htsCode: '8517.12.00', description: 'Telephones for cellular networks or other wireless networks', generalRate: 'Free' },
-    { htsCode: '9403.20.00', description: 'Other metal furniture', generalRate: 'Free' },
-    { htsCode: '6204.62.40', description: "Women's or girls' trousers of cotton", generalRate: '16.6%' },
-    { htsCode: '8528.72.64', description: 'Television receivers, color, with flat panel screen', generalRate: '3.9%' },
-    { htsCode: '9503.00.00', description: 'Tricycles, scooters, pedal cars and similar wheeled toys', generalRate: 'Free' },
-    { htsCode: '4202.22.40', description: 'Handbags with outer surface of textile materials', generalRate: '17.6%' },
-    { htsCode: '0901.21.00', description: 'Coffee, roasted, not decaffeinated', generalRate: 'Free' },
-    { htsCode: '8703.23.00', description: 'Motor vehicles for transport of persons, 1500-3000cc', generalRate: '2.5%' },
-  ];
+  const allMocks: HTSSearchResult[] = Object.entries(MOCK_TARIFF_MAP).map(([code, data]) => ({
+    htsCode: code,
+    description: data.desc,
+    generalRate: data.rate,
+  }));
+
   const q = query.toLowerCase();
-  const filtered = mockData.filter(
+  const filtered = allMocks.filter(
     (d) => d.htsCode.includes(q) || d.description.toLowerCase().includes(q)
   );
-  return filtered.length > 0 ? filtered : mockData.slice(0, 5);
+
+  // Return empty array if no matches — don't return unrelated items
+  return filtered;
 }
 
 function getMockTariffData(htsCode: string): TariffData {
+  // Check if we have a known mock for this code
+  const known = MOCK_TARIFF_MAP[htsCode];
+  if (known) {
+    return {
+      htsCode,
+      description: known.desc,
+      generalRate: known.rate,
+      specialRate: 'Free (various FTAs)',
+      column2Rate: '50%',
+      unit: 'No.',
+      section301: known.s301,
+      section232: known.s232,
+      section201: false,
+      additionalDuties: known.s301 ? ['Section 301: 25% (China)'] : [],
+      lastUpdated: new Date().toISOString(),
+    };
+  }
+
+  // For unknown codes, generate deterministic data from the HTS code itself
+  const seed = Math.abs(hashCode(htsCode));
+  const rate = (seed % 2500) / 100; // 0-25% range
   return {
     htsCode,
     description: `Product classified under HTS ${htsCode}`,
-    generalRate: `${(Math.random() * 25).toFixed(1)}%`,
+    generalRate: `${rate.toFixed(1)}%`,
     specialRate: 'Free (various FTAs)',
     column2Rate: '50%',
     unit: 'No.',
-    section301: Math.random() > 0.5,
-    section232: Math.random() > 0.8,
+    section301: (seed % 3) === 0,
+    section232: (seed % 7) === 0,
     section201: false,
-    additionalDuties: Math.random() > 0.5 ? ['Section 301: 25% (China)'] : [],
+    additionalDuties: (seed % 3) === 0 ? ['Section 301: 25% (China)'] : [],
     lastUpdated: new Date().toISOString(),
   };
 }

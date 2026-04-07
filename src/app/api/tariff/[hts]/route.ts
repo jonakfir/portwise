@@ -3,6 +3,7 @@ import { getTariffData, getTariffHistory } from '@/lib/apis/usitc';
 import { getRecentRules } from '@/lib/apis/federal-register';
 import { getCBPRulings } from '@/lib/apis/cbp';
 import { getTradeAgreements } from '@/lib/apis/trade-gov';
+import { hasUnlimitedAccess } from '@/lib/admin';
 import type { TariffData, FederalRegisterEntry } from '@/types';
 
 export async function GET(
@@ -17,6 +18,21 @@ export async function GET(
         { error: 'Invalid HTS code. Must be at least 4 digits.' },
         { status: 400 }
       );
+    }
+
+    // Check user access - admin users bypass all limits
+    const userEmail = request.headers.get('x-user-email');
+    const userPlan = request.headers.get('x-user-plan') || 'free';
+    const unlimited = hasUnlimitedAccess(userEmail, userPlan);
+
+    if (!unlimited) {
+      const lookupsToday = parseInt(request.headers.get('x-lookups-today') || '0');
+      if (lookupsToday >= 5) {
+        return NextResponse.json(
+          { error: 'Daily lookup limit reached. Upgrade to Pro for unlimited lookups.' },
+          { status: 429 }
+        );
+      }
     }
 
     // Fetch all data in parallel

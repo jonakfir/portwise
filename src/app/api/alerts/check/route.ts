@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 
 // This would be a cron job in production
 // For MVP, this is a manual trigger endpoint
+export async function GET() {
+  return POST();
+}
+
 export async function POST() {
   try {
     // In production this would:

@@ -15,7 +15,7 @@ export const PLANS = {
   pro: {
     name: 'Pro',
     price: 49,
-    priceId: 'price_pro_monthly',
+    priceId: 'price_1TJeVFA9rHY1a2LNWYWrzpOo',
     lookupLimit: -1,
     features: [
       'Unlimited lookups',
@@ -29,7 +29,7 @@ export const PLANS = {
   team: {
     name: 'Team',
     price: 199,
-    priceId: 'price_team_monthly',
+    priceId: 'price_1TJeVZA9rHY1a2LNgioinJqJ',
     lookupLimit: -1,
     features: [
       'Everything in Pro',

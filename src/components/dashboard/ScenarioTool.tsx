@@ -85,8 +85,8 @@ export default function ScenarioTool({ htsCode }: ScenarioToolProps) {
       {result && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-4">
           {/* Comparison table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-6 px-6">
+            <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-navy-300 text-xs text-slate-500 uppercase tracking-wider">
                   <th className="text-left py-3 pr-4">Country</th>
@@ -133,7 +133,12 @@ export default function ScenarioTool({ htsCode }: ScenarioToolProps) {
               </svg>
               <span className="text-xs font-semibold text-white uppercase tracking-wider">AI Recommendation</span>
             </div>
-            <p className="text-sm text-slate-300 leading-relaxed">{result.aiRecommendation}</p>
+            <p
+              className="text-sm text-slate-300 leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: result.aiRecommendation.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+              }}
+            />
           </div>
         </motion.div>
       )}

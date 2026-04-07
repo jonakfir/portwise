@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/ui/Button';
 import { formatHTS } from '@/lib/utils';
@@ -8,9 +8,10 @@ import type { WatchlistItem } from '@/types';
 
 interface WatchlistProps {
   htsCode?: string;
+  onCountChange?: (count: number) => void;
 }
 
-export default function Watchlist({ htsCode }: WatchlistProps) {
+export default function Watchlist({ htsCode, onCountChange }: WatchlistProps) {
   const [items, setItems] = useState<WatchlistItem[]>([
     {
       id: '1',
@@ -31,6 +32,11 @@ export default function Watchlist({ htsCode }: WatchlistProps) {
       createdAt: '2024-10-15',
     },
   ]);
+
+  // Notify parent of count changes
+  useEffect(() => {
+    onCountChange?.(items.length);
+  }, [items.length, onCountChange]);
 
   const addToWatchlist = () => {
     if (!htsCode) return;

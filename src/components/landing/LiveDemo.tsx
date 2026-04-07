@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { searchHTS } from '@/lib/apis/usitc';
 import { debounce, formatHTS } from '@/lib/utils';
 import type { HTSSearchResult } from '@/types';
 import Card from '@/components/ui/Card';
@@ -14,6 +13,25 @@ export default function LiveDemo() {
   const [loading, setLoading] = useState(false);
   const [queriesUsed, setQueriesUsed] = useState(0);
 
+  // Persist query counter in localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('portwise_demo_queries');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const today = new Date().toDateString();
+      if (parsed.date === today) {
+        setQueriesUsed(parsed.count);
+      }
+    }
+  }, []);
+
+  const persistQueries = (count: number) => {
+    localStorage.setItem('portwise_demo_queries', JSON.stringify({
+      date: new Date().toDateString(),
+      count,
+    }));
+  };
+
   const doSearch = useCallback(
     debounce(async (q: string) => {
       if (q.length < 2) {
@@ -22,8 +40,14 @@ export default function LiveDemo() {
       }
       setLoading(true);
       try {
-        const data = await searchHTS(q);
-        setResults(data);
+        // Use server-side API route to avoid CORS issues
+        const res = await fetch(`/api/tariff/search?q=${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data);
+        } else {
+          setResults([]);
+        }
       } catch {
         setResults([]);
       } finally {
@@ -44,8 +68,12 @@ export default function LiveDemo() {
     setSelected(item);
     setQuery(item.htsCode);
     setResults([]);
-    setQueriesUsed((p) => p + 1);
+    const newCount = queriesUsed + 1;
+    setQueriesUsed(newCount);
+    persistQueries(newCount);
   };
+
+  const remaining = Math.max(0, 3 - queriesUsed);
 
   return (
     <section id="demo" className="py-24 relative">
@@ -58,7 +86,7 @@ export default function LiveDemo() {
             Look up any HTS code
           </h2>
           <p className="text-slate-400">
-            Search by product description or HTS code. {3 - queriesUsed} free lookups remaining.
+            Search by product description or HTS code. {remaining} free lookup{remaining !== 1 ? 's' : ''} remaining.
           </p>
         </div>
 
@@ -83,6 +111,20 @@ export default function LiveDemo() {
             )}
           </div>
 
+          {/* No results message */}
+          <AnimatePresence>
+            {results.length === 0 && query.length >= 2 && !loading && !selected && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute z-20 w-full mt-2 glass rounded border border-navy-300 p-4 text-center"
+              >
+                <p className="text-sm text-slate-400">No results found for &ldquo;{query}&rdquo;. Try a different search term.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Dropdown results */}
           <AnimatePresence>
             {results.length > 0 && !selected && (
@@ -101,7 +143,7 @@ export default function LiveDemo() {
                     <span className="font-mono text-orange-400 text-sm whitespace-nowrap pt-0.5">
                       {formatHTS(item.htsCode)}
                     </span>
-                    <span className="text-sm text-slate-300">{item.description}</span>
+                    <span className="text-sm text-slate-300 flex-1 min-w-0">{item.description}</span>
                     <span className="ml-auto font-mono text-ice text-sm whitespace-nowrap pt-0.5">
                       {item.generalRate}
                     </span>
@@ -126,11 +168,11 @@ export default function LiveDemo() {
                 <div className="flex items-start justify-between mb-6">
                   <div>
                     <p className="text-sm text-slate-500 mb-1">HTS Classification</p>
-                    <p className="font-mono text-2xl font-bold text-orange-400">{formatHTS(selected.htsCode)}</p>
+                    <p className="font-mono text-xl sm:text-2xl font-bold text-orange-400">{formatHTS(selected.htsCode)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-slate-500 mb-1">General Rate</p>
-                    <p className="font-mono text-2xl font-bold text-ice">{selected.generalRate}</p>
+                    <p className="font-mono text-xl sm:text-2xl font-bold text-ice">{selected.generalRate}</p>
                   </div>
                 </div>
 
@@ -152,19 +194,19 @@ export default function LiveDemo() {
                   </div>
                   <div className="bg-navy-100/50 rounded p-3">
                     <p className="text-xs text-slate-500 mb-1">Last Updated</p>
-                    <p className="font-mono text-sm font-semibold text-slate-300">Today</p>
+                    <p className="font-mono text-sm font-semibold text-slate-300">{new Date().toLocaleDateString()}</p>
                   </div>
                 </div>
 
                 {/* CTA */}
-                <div className="bg-gradient-to-r from-orange-500/10 to-transparent rounded p-4 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-orange-500/10 to-transparent rounded p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div>
                     <p className="text-sm text-white font-semibold">Want full analysis?</p>
                     <p className="text-xs text-slate-400">AI summary, history, CBP rulings, scenario modeling</p>
                   </div>
                   <a
                     href="/auth/signup"
-                    className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded transition"
+                    className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded transition whitespace-nowrap"
                   >
                     Sign up free
                   </a>

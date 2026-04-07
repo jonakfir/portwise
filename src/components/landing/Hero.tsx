@@ -40,7 +40,7 @@ export default function Hero() {
             <span className="text-sm text-orange-300 font-medium">Live tariff data updated daily</span>
           </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight mb-6">
             Tariffs changed again.
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">

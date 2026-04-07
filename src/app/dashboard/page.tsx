@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HTSSearch from '@/components/dashboard/HTSSearch';
 import TariffResultCard from '@/components/dashboard/TariffResultCard';
@@ -12,6 +12,25 @@ export default function DashboardPage() {
   const [selectedHTS, setSelectedHTS] = useState<string>('');
   const [tariffResult, setTariffResult] = useState<TariffResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userPlan, setUserPlan] = useState<string>('free');
+  const [watchlistCount, setWatchlistCount] = useState(2); // default watchlist has 2 items
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          setIsAdmin(data.isAdmin);
+          setUserPlan(data.isAdmin ? 'admin' : data.plan);
+        }
+      } catch {
+        // Not logged in
+      }
+    };
+    checkAdmin();
+  }, []);
 
   const handleSelect = async (htsCode: string) => {
     setSelectedHTS(htsCode);
@@ -19,7 +38,11 @@ export default function DashboardPage() {
     try {
       const res = await fetch(`/api/tariff/${htsCode}`);
       const data = await res.json();
-      setTariffResult(data);
+      if (data.error) {
+        alert(data.error);
+      } else {
+        setTariffResult(data);
+      }
     } catch {
       // Error handling
     } finally {
@@ -32,9 +55,16 @@ export default function DashboardPage() {
       <Navbar isAuth />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Trade Intelligence Dashboard</h1>
-          <p className="text-sm text-slate-400">Search, analyze, and monitor tariff rates across the Harmonized Tariff Schedule.</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-2">Trade Intelligence Dashboard</h1>
+            <p className="text-sm text-slate-400">Search, analyze, and monitor tariff rates across the Harmonized Tariff Schedule.</p>
+          </div>
+          {isAdmin && (
+            <span className="px-3 py-1 bg-orange-500/20 border border-orange-500/50 text-orange-400 text-xs font-mono uppercase tracking-wider rounded-sm">
+              Admin
+            </span>
+          )}
         </div>
 
         {/* Search */}
@@ -63,7 +93,7 @@ export default function DashboardPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <Watchlist htsCode={selectedHTS} />
+              <Watchlist htsCode={selectedHTS} onCountChange={setWatchlistCount} />
 
               {/* Quick stats */}
               <div className="glass rounded-sm p-6">
@@ -71,11 +101,11 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Lookups today</span>
-                    <span className="font-mono text-sm text-white">3 / unlimited</span>
+                    <span className="font-mono text-sm text-white">{isAdmin ? '∞ unlimited' : '— / 5'}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Watchlist items</span>
-                    <span className="font-mono text-sm text-white">2</span>
+                    <span className="font-mono text-sm text-white">{watchlistCount}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Alerts triggered</span>
@@ -83,7 +113,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-slate-400">Plan</span>
-                    <span className="font-mono text-sm text-green-400">Pro</span>
+                    <span className={`font-mono text-sm ${isAdmin ? 'text-orange-400' : 'text-green-400'}`}>
+                      {isAdmin ? 'Admin' : userPlan.charAt(0).toUpperCase() + userPlan.slice(1)}
+                    </span>
                   </div>
                 </div>
               </div>

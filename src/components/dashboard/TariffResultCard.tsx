@@ -33,7 +33,7 @@ export default function TariffResultCard({ data }: TariffResultCardProps) {
         <p className="text-slate-300 text-sm mb-6">{tariff.description}</p>
 
         {/* Rate grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-6">
           <div className="bg-navy-100/50 rounded p-3">
             <p className="text-xs text-slate-500 mb-1">General</p>
             <p className="font-mono text-sm font-bold text-white">{tariff.generalRate}</p>
@@ -90,33 +90,38 @@ export default function TariffResultCard({ data }: TariffResultCardProps) {
         <p className="text-slate-300 text-sm leading-relaxed">{aiSummary}</p>
       </div>
 
-      {/* Rate history chart placeholder */}
+      {/* Rate history chart */}
       <div className="glass rounded-sm p-6">
         <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Rate History (24 months)</h3>
-        <div className="h-48 flex items-end gap-1">
+        <div className="h-48 flex items-end gap-1 bg-navy-100/30 rounded p-2">
           {history.map((h, i) => {
             const maxRate = Math.max(...history.map((x) => x.rate), 1);
-            const height = (h.rate / maxRate) * 100;
+            const height = Math.max(4, (h.rate / maxRate) * 100); // minimum 4% height for visibility
             return (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <div key={i} className="flex-1 flex flex-col items-center justify-end h-full group relative">
                 <motion.div
                   initial={{ height: 0 }}
                   animate={{ height: `${height}%` }}
                   transition={{ delay: i * 0.03, duration: 0.5 }}
-                  className={`w-full rounded-t ${
+                  className={`w-full rounded-t min-h-[3px] ${
                     h.changeType === 'increase'
-                      ? 'bg-red-500/60'
+                      ? 'bg-red-400'
                       : h.changeType === 'decrease'
-                      ? 'bg-green-500/60'
-                      : 'bg-ice/30'
+                      ? 'bg-green-400'
+                      : 'bg-ice/60'
                   }`}
-                  title={`${h.date}: ${h.rate}%`}
                 />
+                {/* Tooltip on hover */}
+                <div className="absolute bottom-full mb-1 hidden group-hover:block z-10">
+                  <div className="bg-navy-100 border border-navy-300 rounded px-2 py-1 text-xs font-mono text-white whitespace-nowrap shadow-lg">
+                    {h.date}: {h.rate}%
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
-        <div className="flex justify-between mt-2 text-xs text-slate-600 font-mono">
+        <div className="flex justify-between mt-2 text-xs text-slate-500 font-mono">
           <span>{history[0]?.date}</span>
           <span>{history[history.length - 1]?.date}</span>
         </div>
